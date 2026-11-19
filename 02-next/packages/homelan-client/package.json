@@ -1,0 +1,20 @@
+{
+  "name": "@homelan/client",
+  "version": "2.1.0",
+  "description": "HomeLAN local Linux client agent and system integration",
+  "type": "module",
+  "bin": {
+    "homelan-client": "./bin/homelan-client.js"
+  },
+  "exports": "./src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "bin",
+    "src",
+    "systemd",
+    "README.md",
+    "bootstrap"
+  ]
+}

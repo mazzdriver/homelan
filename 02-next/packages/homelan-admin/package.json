@@ -1,0 +1,18 @@
+{
+  "name": "@homelan/admin",
+  "version": "2.1.0",
+  "description": "HomeLAN 2.1 cross-platform admin CLI",
+  "type": "module",
+  "bin": {
+    "homelan": "./bin/homelan.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "bootstrap"
+  ]
+}

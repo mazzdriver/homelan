@@ -1,0 +1,41 @@
+name: tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  node-tests:
+    name: node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22]
+    defaults:
+      run:
+        working-directory: 02-next
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: 02-next/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Unit and mock integration tests
+        run: npm test
+      - name: Static checks
+        run: npm run lint
+      - name: Admin workstation smoke checks
+        if: runner.os == 'Linux'
+        run: npm run test:admin-smoke
+
+# Termux (Android) has no GitHub-hosted runner and stays a manual check.
+# Tests that need a POSIX shell or Linux facts skip themselves on other platforms.
+# The Windows and macOS legs have not been run yet; treat a first failure there as a test-portability bug, not a product bug.

@@ -1,0 +1,20 @@
+{
+  "name": "homelan-workspace",
+  "version": "2.1.0",
+  "private": true,
+  "description": "HomeLAN 2.1 admin/client workspace",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "lint": "node scripts/lint.js",
+    "pack:client": "npm pack ./packages/homelan-client",
+    "release:offline": "node scripts/build-release.mjs",
+    "test:admin-smoke": "node scripts/admin-smoke.mjs"
+  }
+}

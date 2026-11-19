@@ -1,0 +1,67 @@
+name: Bug report
+description: Report a reproducible HomeLAN defect.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include passwords, private keys, personal addresses, full known_hosts files, or unredacted device configs. For security vulnerabilities, use GitHub's private security reporting instead of a public issue.
+  - type: input
+    id: version
+    attributes:
+      label: HomeLAN version / commit
+      placeholder: "2.1.0 / commit SHA"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "Windows 11, Node.js 22; target Linux Mint 22 XFCE"
+    validations:
+      required: true
+  - type: dropdown
+    id: test_kind
+    attributes:
+      label: Where was this observed?
+      options:
+        - Local Admin workstation
+        - Mock SSH / automated test
+        - Linux VM / disposable test machine
+        - Real client device
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include exact commands. Redact secrets and personal network details.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant output / logs
+      description: Paste the smallest useful excerpt. Remove passwords, tokens, keys, personal addresses and usernames.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checks
+      options:
+        - label: I removed secrets and private identifying details.
+          required: true
+        - label: I have stated whether this was a mock, VM or real-device test.
+          required: true

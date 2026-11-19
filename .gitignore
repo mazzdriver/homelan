@@ -1,0 +1,20 @@
+# Local and sensitive configuration
+homelan.json
+*.local.json
+.env
+.env.*
+secrets/
+keys/
+*.pem
+*.key
+
+# Runtime/build
+node_modules/
+__pycache__/
+*.py[cod]
+.npm/
+coverage/
+dist/
+*.log
+.DS_Store
+Thumbs.db
