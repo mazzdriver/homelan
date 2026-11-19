@@ -1,8 +1,10 @@
 // 02-next/tests/client/platform.windows.test.js
-const { inspect, plan } = require('../../packages/homelan-client/src/index.js');
-const os = require('os');
+import { dispatch } from '../../packages/homelan-client/src/index.js';
+// Удаляем повторяющийся импорт
 
 // Мокаем ОС как Windows
+// Удаляем повторяющийся импорт
+
 jest.mock('os', () => ({
   platform: () => 'win32',
   release: () => '10.0.22631',

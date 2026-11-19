@@ -1,7 +1,7 @@
 // 02-next/tests/protocol/lines.test.js
-const { parseLines } = require('../../packages/homelan-protocol/src/lines.js');
+import { parseLines } from '../../packages/homelan-protocol/src/lines.js';
 
-describe('JSON-lines protocol resilience', () => {
+import { describe, it, expect } from 'node:test';
   it('[P-01] should skip invalid JSON and continue stream', () => {
     const stream = [
       '{\"jsonrpc\":\"2.0\",\"method\":\"ping\"}\n',
