@@ -1,7 +1,7 @@
 import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 export const CONFIG_DIR=process.env.HOMELAN_HOME||path.join(os.homedir(),'.homelan');
 export const CONFIG_FILE=path.join(CONFIG_DIR,'config.json');
-const defaults={schema:1,devices:[],ssh:{binary:'ssh',connectTimeout:8,serverAliveInterval:15},client:{packageVersion:'2.1.0'}};
+const defaults={schema:1,passwordMinLength:12,devices:[],ssh:{binary:'ssh',connectTimeout:8,serverAliveInterval:15},client:{packageVersion:'2.1.0'}};
 export function loadConfig(){try{return {...defaults,...JSON.parse(fs.readFileSync(CONFIG_FILE,'utf8'))};}catch(e){if(e.code==='ENOENT')return structuredClone(defaults);throw new Error(`Cannot read ${CONFIG_FILE}: ${e.message}`);}}
 export function saveConfig(c){fs.mkdirSync(CONFIG_DIR,{recursive:true,mode:0o700});const tmp=CONFIG_FILE+'.tmp';fs.writeFileSync(tmp,JSON.stringify(c,null,2)+'\n',{mode:0o600});fs.renameSync(tmp,CONFIG_FILE);}
 export function findDevice(c,id){const d=c.devices.find(x=>x.id===id||x.name===id);if(!d)throw new Error(`Unknown device '${id}'. Run: homelan device list`);if(!/^[a-z0-9][a-z0-9._-]{2,63}$/.test(d.id))throw new Error(`Invalid device id in registry: ${d.id}`);if(typeof d.address!=='string'||! /^[A-Za-z0-9][A-Za-z0-9._:%\-\[\]]*$/.test(d.address))throw new Error(`Invalid address for ${d.id}`);if(typeof d.sshUser!=='string'||!/^[A-Za-z_][A-Za-z0-9._-]{0,31}$/.test(d.sshUser))throw new Error(`Invalid SSH user for ${d.id}`);if(d.port!==undefined&&(!Number.isInteger(d.port)||d.port<1||d.port>65535))throw new Error(`Invalid SSH port for ${d.id}`);if((d.managedUsers||[]).some(u=>!/^[a-z_][a-z0-9_-]{0,31}$/.test(u)))throw new Error(`Invalid managed username for ${d.id}`);return d;}

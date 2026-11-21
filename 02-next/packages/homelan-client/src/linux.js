@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {STATE_DIR,ensureState,readConfig} from './config.js';
+import {validatePasswordPolicy,PASSWORD_MIN_DEFAULT} from './protocol.js';
 const SYSTEMD='/etc/systemd/system';
 function run(bin,args=[],opts={}){
  const r=spawnSync(bin,args,{encoding:'utf8',input:opts.input,timeout:opts.timeout??15000,stdio:['pipe','pipe','pipe']});
@@ -39,9 +40,9 @@ export function locknow(user=null){
  for(const s of sessions){ try{requestSessionLock(s.id);results.push({session:s.id,user:s.user,locked:true});}catch(e){results.push({session:s.id,user:s.user,locked:false,error:e.message});} }
  return {sessions:results,ok:results.every(x=>x.locked)};
 }
-export function setPassword(user,password,{resetUsage=true}={}){
+export function setPassword(user,password,{resetUsage=true,minLength=PASSWORD_MIN_DEFAULT}={}){
  assertRoot(); assertManagedUser(user);
- if(typeof password!=='string'||password.length<12||password.length>256||password.includes(':')||password.includes('\n')||password.includes('\0')) throw new Error('Password must be 12-256 characters and contain no colon or newline');
+ const policy=validatePasswordPolicy(password,minLength);if(!policy.ok)throw new Error(policy.reason);
  // Secret is sent only over stdin; never placed in argv or logs.
  run('chpasswd',[],{input:`${user}:${password}\n`});
  let usageWindowReset=false;if(resetUsage){try{ensureState(); for(const suffix of ['use','expired','parent-locked']){const f=path.join(STATE_DIR,`${user}.${suffix}`);try{fs.unlinkSync(f);}catch(e){if(e.code!=='ENOENT')throw e;}}usageWindowReset=true;}catch(e){return {user,passwordChanged:true,usageWindowReset:false,partialFailure:true,stateError:e.message};}}

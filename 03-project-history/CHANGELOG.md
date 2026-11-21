@@ -48,3 +48,9 @@
 - Extended `AGENTS.md` with rules for contributors working with limited context; recorded the "hardened by default" and engineering-guide decisions.
 - No product behaviour changed.
 
+## Configurable password minimum — 2026-11-20
+
+- `newpass` can use a shorter minimum password length: `--min-length <n>` or `passwordMinLength` in the Admin config (default 12, lowest 1). Empty passwords and colon/newline/NUL stay refused; below 8 prints a warning; generated passwords are unaffected.
+- The rule moved into the shared protocol (`validatePasswordPolicy`); Admin now validates before sending, so a rejected password never reaches the device. With the default, the request is identical to the previous protocol.
+- Added 11 tests, including end-to-end CLI tests with a fake ssh executable. Release tarballs were not rebuilt: installed clients must be updated to honour a minimum below 12.
+

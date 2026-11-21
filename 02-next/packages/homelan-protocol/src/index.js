@@ -83,3 +83,19 @@ export function negotiate(ping, operation) {
 export function compatibilityMatrix(ping) {
   return Object.fromEntries(OPERATIONS.map((operation) => [operation, negotiate(ping, operation)]));
 }
+
+// ---- Password policy for operator-chosen passwords (`newpass`) ----
+// The default stays strict. An operator may lower the minimum length (down to 1) for their own household;
+// generated passwords (`lock`, expiry resets) are always long and are not affected.
+export const PASSWORD_MIN_DEFAULT = 12;
+export const PASSWORD_MIN_FLOOR = 1;
+export const PASSWORD_MAX = 256;
+export function validatePasswordPolicy(password, minLength = PASSWORD_MIN_DEFAULT) {
+  if (!Number.isInteger(minLength) || minLength < PASSWORD_MIN_FLOOR || minLength > PASSWORD_MAX) {
+    return { ok: false, reason: `Minimum password length must be an integer from ${PASSWORD_MIN_FLOOR} to ${PASSWORD_MAX}` };
+  }
+  if (typeof password !== 'string' || password.length < minLength || password.length > PASSWORD_MAX || password.includes(':') || password.includes('\n') || password.includes('\0')) {
+    return { ok: false, reason: `Password must be ${minLength}-${PASSWORD_MAX} characters and contain no colon or newline` };
+  }
+  return { ok: true };
+}

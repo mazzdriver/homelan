@@ -53,3 +53,7 @@ The public repository contains only the hardened product. Intentionally weakened
 
 `02-next/docs/engineering/` is the entry point for contributors: architecture map, functional review, test strategy with required checks, and numbered work packets. Packets that change behaviour (WP-12) or add operations needing a version decision (WP-14) require owner approval before merge.
 
+## 2026-11-20 — Operator-chosen password minimum is configurable; the default stays strict
+
+`newpass` accepts a minimum length from 1 to 256 (default 12), set per command with `--min-length` or globally with `passwordMinLength` in the Admin config. The rule lives in the shared protocol (`validatePasswordPolicy`). Generated passwords are unaffected. Rationale: the operator manages their own household and may deliberately choose simple passwords for children's accounts; the product warns below 8 characters but does not forbid it.
+

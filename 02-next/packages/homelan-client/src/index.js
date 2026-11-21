@@ -17,7 +17,7 @@ export async function dispatch(req,{systemReport=inspectSystem()}={}){
  case 'status': result=adapterFor(systemReport).status();break;
  case 'diagnose': result={system:systemReport,diagnostics:adapterFor(systemReport).diagnose()};break;
  case 'locknow':result=linux.locknow(req.params.user??null);break;
- case 'newpass':result=linux.setPassword(req.params.user,req.params.password);break;
+ case 'newpass':result=linux.setPassword(req.params.user,req.params.password,req.params.minLength===undefined?{}:{minLength:req.params.minLength});break;
  case 'lock':result=linux.lock(req.params.user,req.params.password);break;
  case 'autologin':if(typeof req.params.enabled!=='boolean')throw new Error('enabled must be a boolean');result=linux.setAutologin(req.params.enabled,req.params.user);break;
  case 'locker.set':result=linux.setLocker(req.params.user,req.params.minutes);break;

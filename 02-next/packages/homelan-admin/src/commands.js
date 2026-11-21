@@ -2,6 +2,8 @@ import fs from 'node:fs';import os from 'node:os';import crypto from 'node:crypt
 import {loadConfig,saveConfig,findDevice,CONFIG_DIR} from './config.js';
 import {invoke} from './ssh.js';
 import {guardedInvoke} from './preflight.js';
+import {resolveMinLength,weaknessWarning} from './password-policy.js';
+import {validatePasswordPolicy,PASSWORD_MIN_DEFAULT} from './protocol.js';
 import {compatibilityMatrix} from './protocol.js';
 import {inspectSystem as inspectLocalSystem} from './local-system.js';
 const c=loadConfig();
@@ -24,12 +26,13 @@ Commands:
   client plan <id|all>
   lock <id> --user <name>
   locknow <id> [--user <name>]
-  newpass <id> --user <name> [--password-stdin]
+  newpass <id> --user <name> [--password-stdin] [--min-length <n>]
   autologin <id> --user <name> --enable|--disable
   locker <id> --user <name> --time <minutes>
   arm <id> --user <name> --time <minutes>
   poweroff <id> --confirm
 
+Minimum length for newpass: --min-length, else "passwordMinLength" in config (default 12; 1 is the lowest allowed).
 Secrets are read from stdin. SSH host keys must already be trusted in known_hosts.
 `;
 function parse(argv){const positional=[],opts={};for(let i=0;i<argv.length;i++){const a=argv[i];if(a.startsWith('--')){const k=a.slice(2);if(['enable','disable','confirm','password-stdin','yes'].includes(k))opts[k]=true;else{if(i+1>=argv.length)throw new Error(`Missing value for ${a}`);opts[k]=argv[++i];}}else positional.push(a);}return {positional,opts};}
@@ -91,7 +94,7 @@ export async function main(argv){
  }
  if(area==='lock'){const id=sub,user=requireOpt(o,'user'),password=crypto.randomBytes(24).toString('base64url');const ds=target(id);let failures=0;for(const d of ds){try{const r=await guardedInvoke(invoke,d,c,'lock',{user,password});const value=result(d,r);console.log(`[${d.id}] ${JSON.stringify(value)}`);if(!value.ok)failures++;}catch(e){failures++;console.error(`[${d.id}] ERROR: ${e.message}`);}}if(failures===0)console.log(`One-time recovery password for ${user}: ${password}`);else console.error('Lock did not fully succeed on every target; recovery password withheld. Check per-device results and recover access locally if needed.');if(failures)process.exitCode=1;return;}
  if(area==='locknow'){await each(sub,'locknow',{user:o.user||null});return;}
- if(area==='newpass'){const id=sub,user=requireOpt(o,'user');if(!process.stdin.isTTY&&!o['password-stdin'])throw new Error('When piping a password, add --password-stdin');if(process.stdin.isTTY&&o['password-stdin'])throw new Error('--password-stdin requires piped input');const password=await secret();await each(id,'newpass',{user,password});return;}
+ if(area==='newpass'){const id=sub,user=requireOpt(o,'user');if(!process.stdin.isTTY&&!o['password-stdin'])throw new Error('When piping a password, add --password-stdin');if(process.stdin.isTTY&&o['password-stdin'])throw new Error('--password-stdin requires piped input');const minLength=resolveMinLength({flag:o['min-length'],configured:c.passwordMinLength});const password=await secret();const policy=validatePasswordPolicy(password,minLength);if(!policy.ok)throw new Error(policy.reason);const warn=weaknessWarning(minLength);if(warn)console.error(warn);await each(id,'newpass',minLength===PASSWORD_MIN_DEFAULT?{user,password}:{user,password,minLength});return;}
  if(area==='autologin'){const id=sub,user=requireOpt(o,'user');if(Boolean(o.enable)===Boolean(o.disable))throw new Error('Specify exactly one of --enable or --disable');await each(id,'autologin',{user,enabled:Boolean(o.enable)});return;}
  if(area==='locker'||area==='arm'){const id=sub,user=requireOpt(o,'user'),minutes=Number(requireOpt(o,'time'));if(!Number.isInteger(minutes)||minutes<0)throw new Error('--time must be a non-negative integer');await each(id,area==='locker'?'locker.set':'arm.set',{user,minutes});return;}
  if(area==='poweroff'){const id=sub;if(!o.confirm)throw new Error('Poweroff is destructive. Re-run with --confirm.');await each(id,'poweroff',{confirmed:true});return;}
