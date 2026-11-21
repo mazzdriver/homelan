@@ -83,3 +83,13 @@ Do not delete `kid-ctl.sh`, `provision.sh` or `kid-session-tick.sh` until every 
 - [x] Add adapter capability negotiation and version compatibility matrix for mixed client versions. (Implemented and mock-tested; validate on real clients.)
 - [ ] Test on real Linux Mint 22 XFCE systems with mock-first and explicit parent approval; no target access in build/test stage.
 - [~] Add cross-platform CI on Windows, Linux and Termux where practical. (Workflow for Linux/Windows/macOS added but not yet run on GitHub; Termux stays manual.)
+
+## Engineering follow-ups (see `02-next/docs/engineering/WORK-PACKETS.md`)
+
+- [ ] Client OS logic is ~14% covered because it cannot run without root. Introduce a system port and test it (WP-02, WP-03).
+- [ ] Add CI gates: protocol-copy check, manifest check, shell syntax, coverage ratchet (WP-01).
+- [ ] Fix `installUnits()` using an unimported `writeConfig` (DEF-001, WP-04).
+- [ ] Per-operation parameter validation (WP-05); single version source (WP-06).
+- [ ] ARM usage accounting by elapsed time instead of tick count; needs owner approval (WP-12).
+- [ ] Client uninstall, audit log, `--json` output, `doctor`, `--dry-run` (WP-14 … WP-18).
+

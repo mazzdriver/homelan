@@ -40,3 +40,11 @@
 - Release tarballs and the offline bundle were not rebuilt and still contain the pre-negotiation 2.1.0 code.
 - No real target device was accessed.
 
+## Engineering guide and tooling — 2026-11-19
+
+- Added `02-next/docs/engineering/` (architecture map, functional review with verified defects, test strategy with required checks, 20 work packets).
+- Added `npm run sync:protocol` / `check:protocol` (single sanctioned way to update the vendored protocol copies), `npm run manifest:write` / `manifest:check`, and `npm run test:coverage`.
+- Removed a no-op line from `client compat`.
+- Extended `AGENTS.md` with rules for contributors working with limited context; recorded the "hardened by default" and engineering-guide decisions.
+- No product behaviour changed.
+

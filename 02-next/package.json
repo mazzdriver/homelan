@@ -15,6 +15,11 @@
     "lint": "node scripts/lint.js",
     "pack:client": "npm pack ./packages/homelan-client",
     "release:offline": "node scripts/build-release.mjs",
-    "test:admin-smoke": "node scripts/admin-smoke.mjs"
+    "test:admin-smoke": "node scripts/admin-smoke.mjs",
+    "sync:protocol": "node scripts/sync-protocol.mjs",
+    "check:protocol": "node scripts/sync-protocol.mjs --check",
+    "manifest:write": "node scripts/manifest.mjs --write",
+    "manifest:check": "node scripts/manifest.mjs --check",
+    "test:coverage": "node --test --experimental-test-coverage"
   }
 }

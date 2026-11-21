@@ -44,3 +44,12 @@ Version `2.0.0` is a supervised test build, not a claim of full legacy parity. L
 - Linux/systemd is the only operational adapter in 2.1. Windows detection is implemented, but Windows service/session control is deliberately pending.
 - Unsupported platform operations return `NOT_SUPPORTED`; they must never fall through to Linux shell commands.
 - The offline bundle carries Protocol, Client and Admin tarballs plus platform installers. Node.js/npm remain prerequisites; package installation itself does not contact the registry.
+
+## 2026-11-19 — Hardened by default; training and experiments live elsewhere
+
+The public repository contains only the hardened product. Intentionally weakened builds, exercises or answer keys for learning purposes, if any, are maintained outside this repository and must never be merged into it. Work on this repository (including by automated assistants) must not add deliberate weaknesses, and findings about security-relevant defects are fixed in the product rather than documented here as exercises.
+
+## 2026-11-19 — Engineering guide and work packets
+
+`02-next/docs/engineering/` is the entry point for contributors: architecture map, functional review, test strategy with required checks, and numbered work packets. Packets that change behaviour (WP-12) or add operations needing a version decision (WP-14) require owner approval before merge.
+
